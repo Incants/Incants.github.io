@@ -55,4 +55,130 @@
       border-radius: 6px;
       width: 320px;
       display: flex;
-      flex-direction
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .track iframe {
+      display: none;
+      width: 300px;
+      height: 0;
+      border: none;
+    }
+
+    .track-controls button {
+      margin: 5px;
+    }
+
+    .mood-buttons {
+      margin: 20px 0;
+    }
+
+    .mood-buttons button {
+      background: #fff1;
+      color: #fff;
+      border: 1px solid var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+  <h1>🎶 Synthwave Audio Portal</h1>
+  <input type="text" id="trackUrl" placeholder="Paste YouTube link here">
+  <button onclick="addTrack()">➕ Add Track</button>
+
+  <div class="mood-buttons">
+    <button onclick="setMood('sunset')">🌇 Sunset</button>
+    <button onclick="setMood('rainforest')">🌿 Rainforest</button>
+    <button onclick="setMood('vaporwave')">🌌 Vaporwave</button>
+    <button onclick="setMood('default')">🧊 Default</button>
+  </div>
+
+  <div id="playlist"></div>
+
+  <script>
+    let currentPlaying = null;
+
+    function extractID(url) {
+      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^\?&]+)/);
+      return match ? match[1] : null;
+    }
+
+    function addTrack() {
+      const urlInput = document.getElementById("trackUrl");
+      const videoId = extractID(urlInput.value.trim());
+      if (!videoId) return alert("Invalid YouTube link.");
+
+      const trackDiv = document.createElement("div");
+      trackDiv.className = "track";
+
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+      iframe.allow = "autoplay";
+      iframe.setAttribute("frameborder", "0");
+      iframe.setAttribute("allowfullscreen", "true");
+
+      trackDiv.appendChild(iframe);
+
+      const controlsDiv = document.createElement("div");
+      controlsDiv.className = "track-controls";
+
+      const playBtn = document.createElement("button");
+      playBtn.innerText = "▶️ Play";
+      playBtn.onclick = () => {
+        if (currentPlaying && currentPlaying !== iframe) {
+          currentPlaying.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        }
+        iframe.style.display = "block";
+        iframe.width = "300"; iframe.height = "180";
+        currentPlaying = iframe;
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      };
+
+      const pauseBtn = document.createElement("button");
+      pauseBtn.innerText = "⏸️ Pause";
+      pauseBtn.onclick = () => {
+        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      };
+
+      const removeBtn = document.createElement("button");
+      removeBtn.innerText = "🗑️ Remove";
+      removeBtn.onclick = () => {
+        if (currentPlaying === iframe) {
+          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+          currentPlaying = null;
+        }
+        trackDiv.remove();
+      };
+
+      controlsDiv.appendChild(playBtn);
+      controlsDiv.appendChild(pauseBtn);
+      controlsDiv.appendChild(removeBtn);
+      trackDiv.appendChild(controlsDiv);
+
+      document.getElementById("playlist").appendChild(trackDiv);
+      urlInput.value = "";
+    }
+
+    function setMood(preset) {
+      const root = document.documentElement;
+      switch(preset) {
+        case 'sunset':
+          root.style.setProperty('--bg-color', '#402c31');
+          root.style.setProperty('--accent-color', '#f6d365');
+          break;
+        case 'rainforest':
+          root.style.setProperty('--bg-color', '#203b2d');
+          root.style.setProperty('--accent-color', '#56ab2f');
+          break;
+        case 'vaporwave':
+          root.style.setProperty('--bg-color', '#3b005a');
+          root.style.setProperty('--accent-color', '#ff6ec4');
+          break;
+        default:
+          root.style.setProperty('--bg-color', '#1e002b');
+          root.style.setProperty('--accent-color', '#2af598');
+      }
+    }
+  </script>
+</body>
+</html>
