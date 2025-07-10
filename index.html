@@ -57,11 +57,11 @@
     }
 
     .track {
-      margin-top: 10px;
-      padding: 10px;
+      margin-top: 20px;
+      padding: 12px;
       background: #fff1;
       border-radius: 6px;
-      width: 320px;
+      width: 340px;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -75,7 +75,7 @@
 
     .track iframe {
       display: none;
-      width: 300px;
+      width: 320px;
       height: 0;
       border: none;
     }
@@ -105,6 +105,12 @@
       padding: 4px 8px;
       border-radius: 6px;
       box-shadow: 0 0 6px var(--accent-color);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
     }
 
     .equalizer-flare {
@@ -114,7 +120,7 @@
       align-items: flex-end;
       height: 40px;
       gap: 2px;
-      margin-top: 5px;
+      margin-top: 8px;
     }
 
     .flare-bar {
@@ -125,13 +131,8 @@
       animation: bounce 1s infinite ease-in-out;
     }
 
-    .flare-bar:nth-child(odd) {
-      animation-delay: 0.2s;
-    }
-
-    .flare-bar:nth-child(even) {
-      animation-delay: 0.4s;
-    }
+    .flare-bar:nth-child(odd) { animation-delay: 0.2s; }
+    .flare-bar:nth-child(even) { animation-delay: 0.4s; }
 
     @keyframes bounce {
       0%, 100% { height: 20px; }
@@ -153,9 +154,9 @@
 
   <div id="playlist"></div>
 
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-    let currentPlaying = null;
-    let loopTrack = null;
+    let currentPlayer = null;
 
     function extractID(url) {
       const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\\?v=|embed\\/))([^?&]+)/);
@@ -166,15 +167,14 @@
       const urlInput = document.getElementById("trackUrl");
       const videoId = extractID(urlInput.value.trim());
       if (!videoId) return alert("Invalid YouTube link.");
+      urlInput.value = "";
 
       const trackDiv = document.createElement("div");
       trackDiv.className = "track";
 
-      const iframe = document.createElement("iframe");
-      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=*`;
-      iframe.allow = "autoplay";
-      iframe.setAttribute("frameborder", "0");
-      iframe.setAttribute("allowfullscreen", "true");
+      const playerId = `player${Math.random().toString(36).substr(2, 9)}`;
+      const iframe = document.createElement("div");
+      iframe.id = playerId;
       trackDiv.appendChild(iframe);
 
       const badge = document.createElement("div");
@@ -188,45 +188,12 @@
 
       const playBtn = document.createElement("button");
       playBtn.textContent = "▶️ Play";
-      playBtn.onclick = () => {
-        if (currentPlaying && currentPlaying !== iframe) {
-          currentPlaying.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-          currentPlaying.parentElement.classList.remove("active");
-          currentPlaying.parentElement.querySelector(".now-playing").style.display = "none";
-        }
-        iframe.style.display = "block";
-        iframe.width = "300"; iframe.height = "180";
-        currentPlaying = iframe;
-        loopTrack = iframe;
-        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-        trackDiv.classList.add("active");
-        badge.style.display = "block";
-      };
-
       const pauseBtn = document.createElement("button");
       pauseBtn.textContent = "⏸️ Pause";
-      pauseBtn.onclick = () => {
-        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        trackDiv.classList.remove("active");
-        badge.style.display = "none";
-      };
-
       const loopBtn = document.createElement("button");
       loopBtn.textContent = "🔁 Loop";
-      loopBtn.onclick = () => {
-        iframe.src += "&loop=1&playlist=" + videoId;
-        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-      };
-
       const removeBtn = document.createElement("button");
       removeBtn.textContent = "🗑️ Remove";
-      removeBtn.onclick = () => {
-        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        trackDiv.remove();
-        if (currentPlaying === iframe) {
-          currentPlaying = null;
-        }
-      };
 
       controlsDiv.appendChild(playBtn);
       controlsDiv.appendChild(pauseBtn);
@@ -242,9 +209,57 @@
         flareDiv.appendChild(bar);
       }
       trackDiv.appendChild(flareDiv);
-
       document.getElementById("playlist").appendChild(trackDiv);
-      urlInput.value = "";
+
+      let player;
+      window.onYouTubeIframeAPIReady = () => {
+        player = new YT.Player(playerId, {
+          height: "0",
+          width: "0",
+          videoId: videoId,
+          playerVars: {
+            autoplay: 0,
+            controls: 0,
+            modestbranding: 1
+          }
+        });
+
+        playBtn.onclick = () => {
+          if (currentPlayer && currentPlayer !== player) {
+            currentPlayer.pauseVideo();
+            currentPlayer.getIframe().parentElement.classList.remove("active");
+            currentPlayer.getIframe().parentElement.querySelector(".now-playing").style.display = "none";
+          }
+          player.playVideo();
+          currentPlayer = player;
+          trackDiv.classList.add("active");
+          badge.style.display = "block";
+        };
+
+        pauseBtn.onclick = () => {
+          player.pauseVideo();
+          trackDiv.classList.remove("active");
+          badge.style.display = "none";
+        };
+
+        loopBtn.onclick = () => {
+          player.loadVideoById({ videoId: videoId, startSeconds: 0 });
+          player.playVideo();
+          player.setLoop(true); // optional, may require workaround
+        };
+
+        removeBtn.onclick = () => {
+          if (currentPlayer === player) {
+            player.stopVideo();
+            currentPlayer = null;
+          }
+          trackDiv.remove();
+        };
+      };
+
+      if (typeof YT !== "undefined" && YT.Player) {
+        window.onYouTubeIframeAPIReady();
+      }
     }
 
     function setMood(preset) {
@@ -255,12 +270,4 @@
           root.style.setProperty('--accent-color', '#f6d365');
           break;
         case 'rainforest':
-          root.style.setProperty('--bg-color', '#203b2d');
-          root.style.setProperty('--accent-color', '#56ab2f');
-          break;
-        case 'vaporwave':
-          root.style.setProperty('--bg-color', '#3b005a');
-          root.style.setProperty('--accent-color', '#ff6ec4');
-          break;
-        default:
-          root.style.setProperty('--bg-color', '#1
+          root
