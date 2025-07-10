@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Synthwave Ambient HQ</title>
+  <meta charset="UTF-8">
+  <title>Synthwave Playlist Builder</title>
   <style>
     :root {
       --bg-color: #1e002b;
-      --bar-gradient: linear-gradient(to top, #ff6ec4, #7873f5);
       --accent-color: #ff6ec4;
     }
 
@@ -18,7 +17,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 20px;
+      padding: 30px;
       min-height: 100vh;
       background-image: radial-gradient(#0002 1px, transparent 1px),
                         radial-gradient(#0002 1px, transparent 1px);
@@ -26,200 +25,34 @@
       background-position: 0 0, 20px 20px;
     }
 
-    .controls, .preset-buttons, .playlist {
-      margin-bottom: 20px;
-      text-align: center;
+    h1 {
+      margin-bottom: 10px;
     }
 
     input, button {
-      padding: 10px 14px;
+      padding: 10px;
       font-size: 1em;
+      margin: 5px;
       border-radius: 6px;
       border: none;
-      margin: 5px;
       outline: none;
     }
 
     input {
-      width: 280px;
+      width: 300px;
     }
 
     button {
       background: var(--accent-color);
+      color: #fff;
       cursor: pointer;
     }
 
-    .preset-buttons button {
-      font-weight: bold;
-    }
-
-    #player {
-      width: 0;
-      height: 0;
-      visibility: hidden;
-    }
-
-    .equalizer {
-      display: flex;
-      gap: 4px;
-      justify-content: center;
-      align-items: flex-end;
-      width: 90%;
-      height: 180px;
-      margin-top: 20px;
-    }
-
-    .bar {
-      width: 10px;
-      background: var(--bar-gradient);
-      border-radius: 5px;
-      height: 20px;
-    }
-
-    .playlist button {
-      display: block;
-      width: 280px;
-      margin: 8px auto;
+    .track {
+      margin-top: 10px;
+      padding: 10px;
       background: #fff1;
-      color: #fff;
-      border: 1px solid var(--accent-color);
-    }
-
-    .playlist h3 {
-      margin-bottom: 10px;
-    }
-  </style>
-</head>
-<body>
-  <div class="controls">
-    <input type="text" id="youtubeLink" placeholder="Paste YouTube link…" />
-    <button onclick="loadVideo()">▶ Play</button>
-  </div>
-
-  <div class="preset-buttons">
-    <button onclick="setMood('sunset')">🌇 Sunset</button>
-    <button onclick="setMood('rainforest')">🌿 Rainforest</button>
-    <button onclick="setMood('vaporwave')">🌌 Vaporwave</button>
-    <button onclick="setMood('default')">🧊 Default</button>
-  </div>
-
-  <div class="playlist">
-    <h3>🎵 Synthwave Playlist</h3>
-    <button onclick="loadTrack('https://www.youtube.com/watch?v=MVPTGNGiI-4')">Night Ride FM</button>
-    <button onclick="loadTrack('https://www.youtube.com/watch?v=8GW6sLrK40k')">Synthwave Radio 🌃</button>
-    <button onclick="loadTrack('https://www.youtube.com/watch?v=VcTPy6XEoZw')">Neon Drive</button>
-    <button onclick="loadTrack('https://www.youtube.com/watch?v=Uw3sDz9UD1I')">Lo-Fi Chillwave</button>
-  </div>
-
-  <div id="player"></div>
-  <div class="equalizer" id="equalizer"></div>
-
-  <script>
-    let player, audioCtx, analyser, bars = [], connected = false;
-
-    // Load YouTube API
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.body.appendChild(tag);
-
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('player', {
-        height: '0',
-        width: '0',
-        videoId: '',
-        events: {
-          onStateChange: onPlayerStateChange
-        },
-        playerVars: {
-          autoplay: 1,
-          controls: 0,
-          modestbranding: 1,
-          rel: 0
-        }
-      });
-    }
-
-    function extractVideoID(url) {
-      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^\?&]+)/);
-      return match ? match[1] : null;
-    }
-
-    function loadVideo() {
-      const url = document.getElementById("youtubeLink").value;
-      const videoId = extractVideoID(url);
-      if (player && videoId) {
-        player.loadVideoById(videoId);
-      }
-    }
-
-    function loadTrack(url) {
-      const videoId = extractVideoID(url);
-      if (player && videoId) {
-        player.loadVideoById(videoId);
-      }
-    }
-
-    function onPlayerStateChange(event) {
-      if (event.data === YT.PlayerState.PLAYING && !connected) {
-        connectAudio();
-        animateBars();
-        connected = true;
-      }
-    }
-
-    function connectAudio() {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 64;
-      const source = audioCtx.createMediaElementSource(player.getIframe());
-      source.connect(analyser);
-      analyser.connect(audioCtx.destination);
-
-      const eq = document.getElementById("equalizer");
-      for (let i = 0; i < analyser.frequencyBinCount; i++) {
-        let bar = document.createElement("div");
-        bar.className = "bar";
-        eq.appendChild(bar);
-        bars.push(bar);
-      }
-    }
-
-    function animateBars() {
-      let dataArray = new Uint8Array(analyser.frequencyBinCount);
-      function draw() {
-        requestAnimationFrame(draw);
-        analyser.getByteFrequencyData(dataArray);
-        bars.forEach((bar, i) => {
-          bar.style.height = `${Math.max(dataArray[i], 10)}px`;
-        });
-      }
-      draw();
-    }
-
-    function setMood(preset) {
-      const root = document.documentElement;
-      switch(preset) {
-        case 'sunset':
-          root.style.setProperty('--bg-color', '#402c31');
-          root.style.setProperty('--bar-gradient', 'linear-gradient(to top, #f6d365, #fda085)');
-          root.style.setProperty('--accent-color', '#f6d365');
-          break;
-        case 'rainforest':
-          root.style.setProperty('--bg-color', '#203b2d');
-          root.style.setProperty('--bar-gradient', 'linear-gradient(to top, #a8e063, #56ab2f)');
-          root.style.setProperty('--accent-color', '#56ab2f');
-          break;
-        case 'vaporwave':
-          root.style.setProperty('--bg-color', '#3b005a');
-          root.style.setProperty('--bar-gradient', 'linear-gradient(to top, #ff6ec4, #7873f5)');
-          root.style.setProperty('--accent-color', '#ff6ec4');
-          break;
-        default:
-          root.style.setProperty('--bg-color', '#1e002b');
-          root.style.setProperty('--bar-gradient', 'linear-gradient(to top, #ff3cac, #2af598)');
-          root.style.setProperty('--accent-color', '#2af598');
-      }
-    }
-  </script>
-</body>
-</html>
+      border-radius: 6px;
+      width: 320px;
+      display: flex;
+      flex-direction
