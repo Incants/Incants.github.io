@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sleek Welcome Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #1e1e2f; /* Initial background color */
+      transition: background-color 1.5s ease;
+      overflow: hidden;
+    }
+
+    .fade-text {
+      color: #ffffff;
+      font-size: 2em;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Optional: Add color changing effect on hover or timer */
+    body:hover {
+      background-color: #3e8ed0; /* Change to your preferred color */
+    }
+  </style>
+</head>
+<body>
+  <div class="fade-text">Welcome to My Sleek Page</div>
+</body>
+</html>
