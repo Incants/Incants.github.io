@@ -73,3 +73,65 @@ body {
   transform: scale(1.08);
   box-shadow: 0 0 10px #ffd700;
 }
+
+/* Add to your existing CSS */
+
+body {
+  background: radial-gradient(circle at center, #2f2f2f 0%, #1b1b1b 100%);
+  background-image: url('https://www.transparenttextures.com/patterns/metal-texture.png'); /* Subtle texture */
+  background-repeat: repeat;
+  background-size: cover;
+}
+
+/* Frame Enhancements */
+.frame {
+  border-image: linear-gradient(to right, #d4af37, #8b6f3e, #d4af37) 1;
+  transition: transform 0.3s ease;
+}
+.frame:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 18px #d4af37;
+}
+
+/* Rotating Gear Icon */
+.gear-icon {
+  animation: rotateGear 10s linear infinite;
+}
+
+@keyframes rotateGear {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Decorative glow edges */
+.frame::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  border-radius: 24px;
+  background: linear-gradient(to right, rgba(212,175,55,0.2), rgba(0,0,0,0));
+  box-shadow: 0 0 15px #d4af37;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Smokey mist effect (optional) */
+.frame::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+  animation: mistFlow 5s ease-in-out infinite;
+}
+
+@keyframes mistFlow {
+  0% { transform: translateX(-10px); opacity: 0.05; }
+  50% { transform: translateX(10px); opacity: 0.1; }
+  100% { transform: translateX(-10px); opacity: 0.05; }
+}
