@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Synthwave Playlist Builder</title>
+  <title>Synthwave Playlist Portal</title>
   <style>
     :root {
       --bg-color: #1e002b;
@@ -19,10 +19,12 @@
       align-items: center;
       padding: 30px;
       min-height: 100vh;
-      background-image: radial-gradient(#0002 1px, transparent 1px),
-                        radial-gradient(#0002 1px, transparent 1px);
+      background-image:
+        radial-gradient(#0002 1px, transparent 1px),
+        radial-gradient(#0002 1px, transparent 1px);
       background-size: 40px 40px;
       background-position: 0 0, 20px 20px;
+      transition: background-color 1s ease;
     }
 
     h1 {
@@ -46,6 +48,12 @@
       background: var(--accent-color);
       color: #fff;
       cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    button:active {
+      transform: scale(1.05);
+      box-shadow: 0 0 8px var(--accent-color);
     }
 
     .track {
@@ -54,9 +62,15 @@
       background: #fff1;
       border-radius: 6px;
       width: 320px;
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .track.active {
+      box-shadow: 0 0 16px var(--accent-color);
     }
 
     .track iframe {
@@ -79,10 +93,54 @@
       color: #fff;
       border: 1px solid var(--accent-color);
     }
+
+    .now-playing {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      background: var(--accent-color);
+      color: #000;
+      font-size: 0.8em;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 6px;
+      box-shadow: 0 0 6px var(--accent-color);
+    }
+
+    .equalizer-flare {
+      width: 90%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 40px;
+      gap: 2px;
+      margin-top: 5px;
+    }
+
+    .flare-bar {
+      width: 6px;
+      height: 20px;
+      background: var(--accent-color);
+      border-radius: 2px;
+      animation: bounce 1s infinite ease-in-out;
+    }
+
+    .flare-bar:nth-child(odd) {
+      animation-delay: 0.2s;
+    }
+
+    .flare-bar:nth-child(even) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      0%, 100% { height: 20px; }
+      50% { height: 40px; }
+    }
   </style>
 </head>
 <body>
-  <h1>🎶 Synthwave Audio Portal</h1>
+  <h1>🎶 Synthwave Portal</h1>
   <input type="text" id="trackUrl" placeholder="Paste YouTube link here">
   <button onclick="addTrack()">➕ Add Track</button>
 
@@ -97,9 +155,10 @@
 
   <script>
     let currentPlaying = null;
+    let loopTrack = null;
 
     function extractID(url) {
-      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^\?&]+)/);
+      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\\?v=|embed\\/))([^?&]+)/);
       return match ? match[1] : null;
     }
 
@@ -112,48 +171,77 @@
       trackDiv.className = "track";
 
       const iframe = document.createElement("iframe");
-      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=*`;
       iframe.allow = "autoplay";
       iframe.setAttribute("frameborder", "0");
       iframe.setAttribute("allowfullscreen", "true");
-
       trackDiv.appendChild(iframe);
+
+      const badge = document.createElement("div");
+      badge.className = "now-playing";
+      badge.textContent = "NOW PLAYING";
+      badge.style.display = "none";
+      trackDiv.appendChild(badge);
 
       const controlsDiv = document.createElement("div");
       controlsDiv.className = "track-controls";
 
       const playBtn = document.createElement("button");
-      playBtn.innerText = "▶️ Play";
+      playBtn.textContent = "▶️ Play";
       playBtn.onclick = () => {
         if (currentPlaying && currentPlaying !== iframe) {
           currentPlaying.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+          currentPlaying.parentElement.classList.remove("active");
+          currentPlaying.parentElement.querySelector(".now-playing").style.display = "none";
         }
         iframe.style.display = "block";
         iframe.width = "300"; iframe.height = "180";
         currentPlaying = iframe;
+        loopTrack = iframe;
         iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+        trackDiv.classList.add("active");
+        badge.style.display = "block";
       };
 
       const pauseBtn = document.createElement("button");
-      pauseBtn.innerText = "⏸️ Pause";
+      pauseBtn.textContent = "⏸️ Pause";
       pauseBtn.onclick = () => {
         iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        trackDiv.classList.remove("active");
+        badge.style.display = "none";
+      };
+
+      const loopBtn = document.createElement("button");
+      loopBtn.textContent = "🔁 Loop";
+      loopBtn.onclick = () => {
+        iframe.src += "&loop=1&playlist=" + videoId;
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
       };
 
       const removeBtn = document.createElement("button");
-      removeBtn.innerText = "🗑️ Remove";
+      removeBtn.textContent = "🗑️ Remove";
       removeBtn.onclick = () => {
+        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        trackDiv.remove();
         if (currentPlaying === iframe) {
-          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
           currentPlaying = null;
         }
-        trackDiv.remove();
       };
 
       controlsDiv.appendChild(playBtn);
       controlsDiv.appendChild(pauseBtn);
+      controlsDiv.appendChild(loopBtn);
       controlsDiv.appendChild(removeBtn);
       trackDiv.appendChild(controlsDiv);
+
+      const flareDiv = document.createElement("div");
+      flareDiv.className = "equalizer-flare";
+      for (let i = 0; i < 10; i++) {
+        const bar = document.createElement("div");
+        bar.className = "flare-bar";
+        flareDiv.appendChild(bar);
+      }
+      trackDiv.appendChild(flareDiv);
 
       document.getElementById("playlist").appendChild(trackDiv);
       urlInput.value = "";
@@ -175,10 +263,4 @@
           root.style.setProperty('--accent-color', '#ff6ec4');
           break;
         default:
-          root.style.setProperty('--bg-color', '#1e002b');
-          root.style.setProperty('--accent-color', '#2af598');
-      }
-    }
-  </script>
-</body>
-</html>
+          root.style.setProperty('--bg-color', '#1
