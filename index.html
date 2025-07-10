@@ -2,44 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Ensures proper rendering and touch zooming on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>My First Page</title>
-  
-  <!-- Link to external CSS (optional) -->
-  <!-- <link rel="stylesheet" href="styles.css" /> -->
+  <title>test</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #1e1e2f; /* Initial background color */
+      transition: background-color 1.5s ease;
+      overflow: hidden;
+    }
+
+    .fade-text {
+      color: #ffffff;
+      font-size: 2em;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Optional: Add color changing effect on hover or timer */
+    body:hover {
+      background-color: #3e8ed0; /* Change to your preferred color */
+    }
+  </style>
 </head>
 <body>
-  <!-- Main visible content goes here -->
-  <header>
-    <h1>Welcome to My Page</h1>
-  </header>
-  
-  <nav>
-    <ul>
-      <li><a href="#section1">Section 1</a></li>
-      <li><a href="#section2">Section 2</a></li>
-    </ul>
-  </nav>
-  
-  <main>
-    <section id="section1">
-      <h2>Section 1 Heading</h2>
-      <p>This is a paragraph of text in section 1.</p>
-    </section>
-    
-    <section id="section2">
-      <h2>Section 2 Heading</h2>
-      <p>This is a paragraph of text in section 2.</p>
-    </section>
-  </main>
-  
-  <footer>
-    <p>&copy; 2025 Your Name</p>
-  </footer>
-  
-  <!-- Optional JavaScript before closing body -->
-  <!-- <script src="script.js"></script> -->
+  <div class="fade-text">Welcome to My Sleek Page</div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sleek Welcome Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #1e1e2f; /* Initial background color */
+      transition: background-color 1.5s ease;
+      overflow: hidden;
+    }
+
+    .fade-text {
+      color: #ffffff;
+      font-size: 2em;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Optional: Add color changing effect on hover or timer */
+    body:hover {
+      background-color: #3e8ed0; /* Change to your preferred color */
+    }
+  </style>
+</head>
+<body>
+  <div class="fade-text">Welcome to My Sleek Page</div>
 </body>
 </html>
