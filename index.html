@@ -1,38 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>incants</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Cinzel', serif;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #1b1b1b, #3a2d1f); /* Steampunk base */
-      transition: background 1.5s ease;
-      overflow: hidden;
-    }
+<link rel="stylesheet" href="style.css" />
 
-    .fade-text {
-      color: #d4af37; /* brass/gold tone */
-      font-size: 2.5em;
-      opacity: 0;
-      animation: fadeIn 2s forwards;
-      text-shadow: 0 0 10px #5c4a1d;
-    }
-
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(30px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    body:hover {
-      background: linear-gradient(135deg, #2e2e2e, #5a3d2b); /* warmer brass tones on hover */
-    }
-
-    /* Optional Google Font Import */
-    @import url('https://fonts.googleapis
+<div class="frame">
+  <svg class="gear-icon" viewBox="0 0 512 512">...</svg>
+  <h2>Steam Logbook</h2>
+  <div class="button-group">
+    <button class="steampunk-btn">Inspect</button>
+    <button class="steampunk-btn">Access</button>
+  </div>
+</div>
