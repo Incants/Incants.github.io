@@ -1,137 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel&display=swap');
-
 body {
   margin: 0;
-  font-family: 'Cinzel', serif;
-  background: radial-gradient(circle at center, #2f2f2f 0%, #1b1b1b 100%);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 40px;
-}
-
-/* FRAME CONTAINER */
-.frame {
-  width: 320px;
-  height: 280px;
-  background: linear-gradient(to bottom right, #3a2d1f, #1e1e1e);
-  border: 4px solid #b8860b;
-  border-radius: 20px;
-  box-shadow: inset 0 0 5px #000000, 0 0 10px #8b6f3e;
-  margin: 20px;
+  height: 100vh;
+  background-color: #0d0d0d;
+  overflow: hidden;
   position: relative;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: #f0e6c0;
-  text-align: center;
 }
 
-/* TITLE */
-.frame h2 {
-  margin: 0;
-  font-size: 1.4em;
-  text-shadow: 0 0 5px #5c4a1d;
-}
-
-/* GEAR ICON */
-.gear-icon {
+/* Base pulse background */
+.glitch-bg {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 40px;
-  height: 40px;
-  opacity: 0.4;
-  fill: #d4af37;
-}
-
-/* BUTTON GROUP */
-.button-group {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 15px;
-}
-
-/* STEAMPUNK BUTTONS */
-.steampunk-btn {
-  padding: 8px 14px;
-  font-size: 0.9em;
-  color: #fff8dc;
-  background: linear-gradient(145deg, #6b4c2d, #3a2d1f);
-  border: 2px solid #d4af37;
-  border-radius: 10px;
-  box-shadow: 0 0 5px #a38a5f;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.steampunk-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 10px #ffd700;
-}
-
-/* Add to your existing CSS */
-
-body {
-  background: radial-gradient(circle at center, #2f2f2f 0%, #1b1b1b 100%);
-  background-image: url('https://www.transparenttextures.com/patterns/metal-texture.png'); /* Subtle texture */
-  background-repeat: repeat;
-  background-size: cover;
-}
-
-/* Frame Enhancements */
-.frame {
-  border-image: linear-gradient(to right, #d4af37, #8b6f3e, #d4af37) 1;
-  transition: transform 0.3s ease;
-}
-.frame:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 18px #d4af37;
-}
-
-/* Rotating Gear Icon */
-.gear-icon {
-  animation: rotateGear 10s linear infinite;
-}
-
-@keyframes rotateGear {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Decorative glow edges */
-.frame::before {
-  content: '';
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  width: calc(100% + 10px);
-  height: calc(100% + 10px);
-  border-radius: 24px;
-  background: linear-gradient(to right, rgba(212,175,55,0.2), rgba(0,0,0,0));
-  box-shadow: 0 0 15px #d4af37;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Smokey mist effect (optional) */
-.frame::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
-  height: 30px;
-  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-  animation: mistFlow 5s ease-in-out infinite;
+  height: 100%;
+  background: linear-gradient(90deg, #111, #191919);
+  animation: flicker 2s infinite;
+  z-index: -3;
 }
 
-@keyframes mistFlow {
-  0% { transform: translateX(-10px); opacity: 0.05; }
-  50% { transform: translateX(10px); opacity: 0.1; }
-  100% { transform: translateX(-10px); opacity: 0.05; }
+/* Color scan layer */
+.scanline {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  animation: scroll 10s linear infinite;
+  z-index: -2;
+}
+
+/* Glitch layers */
+.glitch-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 0, 50, 0.02);
+  mix-blend-mode: difference;
+  animation: glitchShift 3s infinite;
+  z-index: -1;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100%; }
+}
+
+@keyframes glitchShift {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(5px, -2px); }
+  40% { transform: translate(-3px, 4px); }
+  60% { transform: translate(3px, -3px); }
+  80% { transform: translate(-2px, 2px); }
+  100% { transform: translate(0, 0); }
 }
