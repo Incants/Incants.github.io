@@ -2,40 +2,132 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Disc’s Portfolio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sleek Welcome Page</title>
   <style>
+    :root {
+      --primary-color: #2af598;
+      --bg-color: #1e002b;
+      --card-bg: #2c1a39;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
+      background: var(--bg-color);
+      color: #fff;
+      padding: 40px;
+      line-height: 1.6;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin: 0;
+    }
+
+    h2 {
+      margin-top: 30px;
+      border-bottom: 1px solid var(--primary-color);
+      padding-bottom: 8px;
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 0 10px var(--primary-color);
+    }
+
+    .project-card a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .skills {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #1e1e2f; /* Initial background color */
-      transition: background-color 1.5s ease;
-      overflow: hidden;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .fade-text {
-      color: #ffffff;
-      font-size: 2em;
-      opacity: 0;
-      animation: fadeIn 2s forwards;
+    .skills span {
+      background: var(--primary-color);
+      color: #000;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 0.9em;
     }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
     }
 
-    /* Optional: Add color changing effect on hover or timer */
-    body:hover {
-      background-color: #3e8ed0; /* Change to your preferred color */
+    a.button {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background: var(--primary-color);
+      color: #000;
+      border-radius: 5px;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <div class="fade-text">Welcome to My Sleek Page</div>
+  <header>
+    <h1>Disc</h1>
+    <p>Creative Web Developer & UX Designer</p>
+  </header>
+
+  <section>
+    <h2>🚀 Projects</h2>
+
+    <div class="project-card">
+      <h3>Synthwave Playlist Portal</h3>
+      <p>A retro-themed music portal with YouTube integration, mood palettes, and glowing visual feedback.</p>
+      <a href="https://github.com/yourusername/synthwave-portal" target="_blank">View on GitHub</a>
+    </div>
+
+    <div class="project-card">
+      <h3>Animated Mood Palette Builder</h3>
+      <p>Interactive tool for designing atmospheric themes using color psychology and animated transitions.</p>
+      <a href="#">(Add link)</a>
+    </div>
+
+    <!-- Add more projects here -->
+
+  </section>
+
+  <section>
+    <h2>🧠 Skills</h2>
+    <div class="skills">
+      <span>HTML</span>
+      <span>CSS</span>
+      <span>JavaScript</span>
+      <span>UX Design</span>
+      <span>API Integration</span>
+      <span>Creative Coding</span>
+      <span>GitHub Pages</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>📫 Contact</h2>
+    <p>Email me at: <a href="mailto:you@example.com">you@example.com</a></p>
+    <a href="https://github.com/incants" class="button">GitHub</a>
+    <a href="https://linkedin.com/in/yourusername" class="button">LinkedIn</a>
+  </section>
+
+  <footer>
+    <p>© 2025 Disc. Made with steampunk gears and crystal tears.</p>
+  </footer>
 </body>
 </html>
